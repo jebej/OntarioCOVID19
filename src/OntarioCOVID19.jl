@@ -1,6 +1,6 @@
 module OntarioCOVID19
 
-using CSVFiles, DataFrames, PyPlot
+using CSVFiles, DataFrames, Dates, PyPlot
 
 export get_summary_data, plot_total_cases
 
@@ -32,7 +32,7 @@ function plot_total_cases()
     ax1.bar(date,recovered,bottom=active)
     ax1.bar(date,deceased,bottom=active.+recovered)
     ax1.grid(true)
-    ax1.set(ylabel="Cases")
+    ax1.set(xlim=[date[17],date[end]+Day(1)],ylabel="Cases")
     ax1.legend(["Active","Recovered","Deceased"])
 
     ax2.bar(date,daily)
