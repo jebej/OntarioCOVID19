@@ -11,6 +11,7 @@ makedocs(
     clean = false,
     pages = [
         "Ontario COVID-19 Status" => "index.md",
+        "Testing" => "testing.md",
     ]
 )
 
