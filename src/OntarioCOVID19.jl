@@ -1,17 +1,17 @@
 module OntarioCOVID19
 
-using CSVFiles, DataFrames, Dates, PyPlot
+using HTTP, CSV, DataFrames, Dates, PyPlot
 
 export get_summary_data, plot_total_cases, plot_testing
 
 function get_summary_data()
     url = "https://data.ontario.ca/dataset/f4f86e54-872d-43f8-8a86-3892fd3cb5e6/resource/ed270bb8-340b-41f9-a7c6-e8ef587e6d11/download/covidtesting.csv"
-    return DataFrame(load(url,header_exists=true))
+    return CSV.File(HTTP.get(url).body) |> DataFrame
 end
 
-function plot_total_cases()
+function plot_total_cases(df::DataFrame)
     # download data
-    df = dropmissing(get_summary_data(), Symbol("Total Cases"), disallowmissing=true)
+    df = dropmissing(df, Symbol("Total Cases"), disallowmissing=true)
 
     # cases
     date = df[:,Symbol("Reported Date")]
@@ -47,43 +47,53 @@ function plot_total_cases()
     ax3.legend(["Hospitalized, not in ICU","ICU without ventilator","On a ventilator"])
 
     tight_layout(true)
-    return nothing
+    return fig
 end
 
-function plot_testing()
+function plot_testing(df::DataFrame)
     # download data
-    df = dropmissing(get_summary_data(), Symbol("Total Cases"), disallowmissing=true)
+    df = dropmissing(df, Symbol("Total Cases"), disallowmissing=true)
 
     # cases
     date = df[:,Symbol("Reported Date")]
     tests = coalesce.(df[:,Symbol("Total patients approved for testing as of Reporting Date")],0)
-    positive = df[:,Symbol("Total Cases")]
+    total_positive = df[:,Symbol("Total Cases")]
+    daily_positive = diff([0;total_positive])
     #negative = coalesce.(df[:,Symbol("Confirmed Negative")], 0) # missing data...
     investigating = coalesce.(df[:,Symbol("Under Investigation")], 0)
     presumed_pos = coalesce.(df[:,Symbol("Presumptive Positive")], 0)
     presumed_neg = coalesce.(df[:,Symbol("Presumptive Negative")], 0)
 
     investigating .+= presumed_pos .+ presumed_neg
-    negative = max.(tests .- positive .- investigating, 0)
+    negative = max.(tests .- total_positive .- investigating, 0)
 
-    daily = diff([0; positive .+ negative .+ investigating])
+    daily_total = diff([0; total_positive .+ negative .+ investigating])
 
     # plot
-    fig, (ax1, ax2) = subplots(2,1,sharex=true,figsize=(9,9))
+    fig, (ax1, ax2, ax3) = subplots(3,1,sharex=true,figsize=(9,12))
 
     ax1.bar(date,negative)
     ax1.bar(date,investigating,bottom=negative)
-    ax1.bar(date,positive,bottom=investigating.+negative)
+    ax1.bar(date,total_positive,bottom=investigating.+negative)
     ax1.grid(true)
     ax1.set(xlim=[date[17],date[end]+Day(1)],ylabel="Tests")
     ax1.legend(["Negative","Pending","Positive"])
 
-    ax2.bar(date,daily)
+    ax2.plot(date,daily_positive./daily_total.*100)
+    ax2.plot(date[7:end],moving_average(daily_positive./daily_total,7).*100)
     ax2.grid(true)
-    ax2.set(ylabel="Daily Tests")
+    ax2.set(ylim=(0,20),ylabel="Positivity Rate (%)")
+    ax2.legend(["Daily","7 Day Average"])
+
+    ax3.bar(date,daily_total)
+    ax3.grid(true)
+    ax3.set(ylabel="Daily Tests")
 
     tight_layout(true)
-    return nothing
+    return fig
 end
+
+# backward-looking moving average
+moving_average(vs,n) = [sum(@view vs[i-n+1:i])/n for i in n:length(vs)]
 
 end # module
