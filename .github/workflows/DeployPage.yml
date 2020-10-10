@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - master
+      - plotly
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
@@ -38,10 +39,11 @@ jobs:
     # `@def prepath = "YourPackage.jl/web"`
     - run: julia -e '
             using Pkg;
-            Pkg.add(["NodeJS", "PkgPage", "DataFrames"]);
+            Pkg.add("NodeJS");
             using NodeJS;
             run(`$(npm_cmd()) install highlight.js purgecss`);
-            import PkgPage;
+            Pkg.activate("."); Pkg.instantiate();
+            using PkgPage, OntarioCOVID19;
             PkgPage.optimize(input="page", output="")'
     - name: Build and Deploy
       uses: JamesIves/github-pages-deploy-action@releases/v3
