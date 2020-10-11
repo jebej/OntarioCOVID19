@@ -1,6 +1,6 @@
 <!-- META DEFINITIONS -->
 @def title       = "Ontario COVID-19 Status"
-@def prepath     = "OntarioCOVID19.jl"
+@def prepath     = "OntarioCOVID19"
 @def description = ""
 @def authors     = "Jérémy Béjanin"
 @def hasplotly   = true
