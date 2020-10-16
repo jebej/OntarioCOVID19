@@ -11,3 +11,6 @@ Franklin = "713c75ef-9fc9-4b05-94a9-213340da978e"
 HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
 PkgPage = "e7214860-93a8-4f22-b43d-bd447d1a2094"
 PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
+
+[compat]
+Franklin = "= 0.10.3"
