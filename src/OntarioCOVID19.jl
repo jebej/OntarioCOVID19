@@ -10,7 +10,7 @@ function plotlyplot(p::Plot)
     <div id="$(p.divid)" style="width:100%;height:500px;"></div>
     <script>
       var plot_json = $(json(p));
-      Plotly.newPlot("$(p.divid)", plot_json.data, plot_json.layout, {responsive: true});
+      Plotly.newPlot("$(p.divid)", plot_json.data, plot_json.layout, {responsive: true, displaylogo: false});
     </script>
     ~~~
     """)
@@ -50,7 +50,7 @@ function plot_all_plotly(df::DataFrame)
     positivity = max.(0,daily_positive./daily_total.*100)
 
     # plot
-    layout_options = (xaxis_range=[date[18],date[end]+Day(1)],xaxis_title="Date",legend_xanchor="left",legend_x=0.01,paper_bgcolor="rgba(255,255,255,0)",plot_bgcolor="rgba(255,255,255,0)")
+    layout_options = (xaxis_range=[date[18],date[end]+Day(1)], xaxis_title="Date", legend_xanchor="left", legend_x=0.01, paper_bgcolor="rgba(255,255,255,0)", plot_bgcolor="rgba(255,255,255,0)", margin_l=50, margin_r=50, margin_t=50, margin_b=50)
 
     t1 = bar(x=date,y=active,name="Active")
     t2 = bar(x=date,y=recovered,name="Recovered")
