@@ -1,6 +1,0 @@
-MethodError: no method matching +(::String, ::Dates.Day)
-Closest candidates are:
-  +(::Any, ::Any, !Matched::Any, !Matched::Any...) at operators.jl:538
-  +(!Matched::Dates.Date, ::Dates.Day) at /buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.5/Dates/src/arithmetic.jl:74
-  +(!Matched::Dates.CompoundPeriod, ::Dates.Period) at /buildworker/worker/package_linux64/build/usr/share/julia/stdlib/v1.5/Dates/src/periods.jl:345
-  ...
