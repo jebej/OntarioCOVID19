@@ -1,7 +1,7 @@
 module OntarioCOVID19
 
 using HTTP, CSV, DataFrames, Dates, PlotlyBase
-export plot_all_plotly, plotlyplot
+export plot_all_plotly, plot_vaccination_data, plotlyplot
 
 # show plots in static HTML
 function plotlyplot(p::Plot)
@@ -21,6 +21,52 @@ function get_summary_data()
     bytes = Vector{UInt8}(replace(String(HTTP.get(url).body),".0"=>""))
     return CSV.File(bytes; normalizenames=true) |> DataFrame
 end
+
+function get_vaccine_data()
+    url = "https://data.ontario.ca/dataset/752ce2b7-c15a-4965-a3dc-397bf405e7cc/resource/8a89caa9-511c-4568-af89-7f2174b4378c/download/vaccine_doses.csv"
+    df = CSV.File(HTTP.get(url).body; normalizenames=true, dateformat="mm/dd/yyyy") |> DataFrame
+    return df
+end
+
+function plot_vaccination_data()
+    # vaccination data
+    df = OntarioCOVID19.get_vaccine_data()::DataFrame
+    df = dropmissing(df, :total_doses_administered, disallowmissing=true)::DataFrame
+
+    date = df.report_date::Vector{Date}
+    prev_day_admin = @. tryparse(Int,replace(coalesce(df.previous_day_doses_administered,"0"),","=>""))::Vector{Int}
+    total_admin = @. tryparse(Int,replace(coalesce(df.total_doses_administered,"0"),","=>""))::Vector{Int}
+    total_complete = @. tryparse(Int,replace(coalesce(df.total_vaccinations_completed,"0"),","=>""))::Vector{Int}
+
+    # insert a data row for 2020-12-29 by using previous_day_doses_administered
+    insert!(date, 2, date[2]-Day(1))
+    insert!(total_admin, 2, total_admin[2] - prev_day_admin[2])
+    insert!(prev_day_admin, 2, 0)
+    insert!(total_complete, 2, 0)
+
+    # insert missing rows between 24th & 29th
+    splice!(date, 2:1, date[2].-Day.(4:-1:1))
+    splice!(total_admin, 2:1, fill(total_admin[1],4))
+    splice!(prev_day_admin, 2:1, fill(0,4))
+    splice!(total_complete, 2:1, fill(0,4))
+
+    # manipulations to get daily data
+    daily_dose = diff([0;total_admin])
+    daily_date = date .- Day(1)
+
+    # plot
+    layout_options = (xaxis_title="Date", legend_xanchor="left", legend_x=0.01, paper_bgcolor="rgba(255,255,255,0)", plot_bgcolor="rgba(255,255,255,0)", margin_l=50, margin_r=50, margin_t=50, margin_b=50)
+
+    t1 = bar(x=date,y=total_complete,name="Fully Vaccinated")
+    t2 = bar(x=date,y=total_admin.-total_complete.*2,name="Partially Vaccinated")
+    p1 = Plot([t1,t2], Layout(yaxis_title="People Vaccinated",barmode="stack";layout_options...))    
+
+
+    t1 = bar(x=daily_date,y=daily_dose,name="Daily Doses")
+    t2 = scatter(x=daily_date[7:end],y=moving_average(daily_dose,7),name="7-Day Average")
+    p2 = Plot([t1,t2], Layout(yaxis_title="Doses",barmode="stack";layout_options...))
+
+    return p1, p2
 end
 
 function plot_all_plotly()

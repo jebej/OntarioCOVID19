@@ -2,6 +2,7 @@
 #hideall
 using OntarioCOVID19
 p1,p2,p3,p4,p5,p6 = plot_all_plotly()
+pv1,pv2 = plot_vaccination_data()
 nothing
 ```
 
@@ -51,6 +52,22 @@ plotlyplot(p5) #hide
 plotlyplot(p6) #hide
 ```
 \textoutput{fig6}
+\end{:section}
+
+<!-- Total Vaccinated -->
+\begin{:section, title="Vaccinations", name="Vaccinations"}
+```julia:fig7
+plotlyplot(pv1) #hide
+```
+\textoutput{fig7}
+\end{:section}
+
+<!-- Daily Doses -->
+\begin{:section, title="Daily Doses Administered", name="Daily Doses"}
+```julia:fig8
+plotlyplot(pv2) #hide
+```
+\textoutput{fig8}
 \end{:section}
 
 <!-- Data Source -->
