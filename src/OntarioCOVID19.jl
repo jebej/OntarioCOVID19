@@ -18,29 +18,32 @@ end
 
 function get_summary_data()
     url = "https://data.ontario.ca/dataset/f4f86e54-872d-43f8-8a86-3892fd3cb5e6/resource/ed270bb8-340b-41f9-a7c6-e8ef587e6d11/download/covidtesting.csv"
-    return CSV.File(HTTP.get(url).body) |> DataFrame
+    bytes = Vector{UInt8}(replace(String(HTTP.get(url).body),".0"=>""))
+    return CSV.File(bytes; normalizenames=true) |> DataFrame
+end
 end
 
-function plot_all_plotly(df::DataFrame)
+function plot_all_plotly()
     # download data
-    df = dropmissing(df, Symbol("Total Cases"), disallowmissing=true)
+    df = get_summary_data()::DataFrame
+    df = dropmissing(df, :Total_Cases, disallowmissing=true)::DataFrame
 
     # cases
-    date = df[:,Symbol("Reported Date")]
-    total_positive = df[:,Symbol("Total Cases")]
+    date = df.Reported_Date::Vector{Date}
+    total_positive = df.Total_Cases::Vector{Int}
     daily_positive = diff([0;total_positive])
-    active = coalesce.(df[:,Symbol("Confirmed Positive")], 0)
-    recovered = coalesce.(df[:,Symbol("Resolved")], 0)
-    deceased = coalesce.(df[:,Symbol("Deaths")], 0)
-    deceased = coalesce.(df[:,Symbol("Deaths")], 0)
-    ventilator = coalesce.(df[:,Symbol("Number of patients in ICU on a ventilator with COVID-19")], 0)
-    icu = coalesce.(df[:,Symbol("Number of patients in ICU with COVID-19")], 0)
-    hospitalized = coalesce.(df[:,Symbol("Number of patients hospitalized with COVID-19")], 0)
+    active = coalesce.(df.Confirmed_Positive,0)::Vector{Int}
+    recovered = coalesce.(df.Resolved,0)::Vector{Int}
+    deceased = coalesce.(df.Deaths,0)::Vector{Int}
+    deceased = coalesce.(df.Deaths,0)::Vector{Int}
+    ventilator = coalesce.(df.Number_of_patients_in_ICU_on_a_ventilator_with_COVID_19,0)::Vector{Int}
+    icu = coalesce.(df.Number_of_patients_in_ICU_with_COVID_19,0)::Vector{Int}
+    hospitalized = coalesce.(df.Number_of_patients_hospitalized_with_COVID_19,0)::Vector{Int}
 
-    tests = coalesce.(df[:,Symbol("Total patients approved for testing as of Reporting Date")],0)
-    investigating = coalesce.(df[:,Symbol("Under Investigation")], 0)
-    presumed_pos = coalesce.(df[:,Symbol("Presumptive Positive")], 0)
-    presumed_neg = coalesce.(df[:,Symbol("Presumptive Negative")], 0)
+    tests = coalesce.(df.Total_patients_approved_for_testing_as_of_Reporting_Date,0)::Vector{Int}
+    investigating = coalesce.(df.Under_Investigation,0)::Vector{Int}
+    presumed_pos = coalesce.(df.Presumptive_Positive,0)::Vector{Int}
+    presumed_neg = coalesce.(df.Presumptive_Negative,0)::Vector{Int}
 
     investigating .+= presumed_pos .+ presumed_neg
     negative = max.(tests .- total_positive .- investigating, 0) # don't use confirmed neg col since it's not updated
