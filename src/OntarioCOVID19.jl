@@ -24,7 +24,7 @@ end
 
 function get_vaccine_data()
     url = "https://data.ontario.ca/dataset/752ce2b7-c15a-4965-a3dc-397bf405e7cc/resource/8a89caa9-511c-4568-af89-7f2174b4378c/download/vaccine_doses.csv"
-    df = CSV.File(HTTP.get(url).body; normalizenames=true, dateformat="mm/dd/yyyy") |> DataFrame
+    df = CSV.File(HTTP.get(url).body; normalizenames=true) |> DataFrame
     return df
 end
 
@@ -59,7 +59,7 @@ function plot_vaccination_data()
 
     t1 = bar(x=date,y=total_complete,name="Fully Vaccinated")
     t2 = bar(x=date,y=total_admin.-total_complete.*2,name="Partially Vaccinated")
-    p1 = Plot([t1,t2], Layout(yaxis_title="People Vaccinated",barmode="stack";layout_options...))    
+    p1 = Plot([t1,t2], Layout(yaxis_title="People Vaccinated",barmode="stack";layout_options...))
 
 
     t1 = bar(x=daily_date,y=daily_dose,name="Daily Doses")
@@ -128,10 +128,26 @@ function plot_all_plotly()
     t2 = scatter(x=date[7:end],y=moving_average(daily_total,7),name="7-Day Average")
     p6 = Plot([t1,t2], Layout(yaxis_title="Daily Tests";layout_options...))
 
-    return p1, p2, p3, p4, p5, p6
+    idx = icu .!= 0
+    frac_icu = icu[idx]./hospitalized[idx].*100
+    frac_vent = ventilator[idx]./icu[idx].*100
+    X = [fill!(similar(frac_icu),1) 1:length(frac_icu)]
+    A1 = X*linreg(X,frac_icu)
+    A2 = X*linreg(X,frac_vent)
+
+    t1 = scatter(x=date[idx],y=frac_icu,mode="markers",name="Fraction of hospitalized patients in ICU")
+    t2 = scatter(x=date[idx],y=frac_vent,mode="markers",name="Fraction of patients in ICU on a ventilator")
+    t3 = scatter(x=date[idx],y=A1,name="")
+    t4 = scatter(x=date[idx],y=A2,name="")
+    p7 = Plot([t1,t2,t3,t4], Layout(yaxis_title="Percentage (%)",yaxis_range=[0,100];layout_options...))
+
+    return p1, p2, p3, p4, p5, p6, p7
 end
 
 # backward-looking moving average
 moving_average(vs,n) = [sum(@view vs[i-n+1:i])/n for i in n:length(vs)]
+
+# linear regression
+linreg(x::Matrix, y::Array) = x\y
 
 end # module
