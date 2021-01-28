@@ -1,0 +1,1 @@
+ArgumentError: column name :total_vaccinations_completed not found in the data frame
