@@ -10,7 +10,8 @@ function plotlyplot(p::Plot)
     <div id="$(p.divid)" style="width:100%;height:500px;"></div>
     <script>
       var plot_json = $(json(p));
-      Plotly.newPlot("$(p.divid)", plot_json.data, plot_json.layout, {responsive: true, displaylogo: false});
+      var config = {responsive: true, displaylogo: false, toImageButtonOptions: {filename:'ontario-covid19',scale:2}};
+      Plotly.newPlot("$(p.divid)", plot_json.data, plot_json.layout, config);
     </script>
     ~~~
     """)
