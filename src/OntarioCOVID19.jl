@@ -56,11 +56,17 @@ function plot_vaccination_data()
     daily_date = date .- Day(1)
 
     # plot
-    layout_options = (xaxis_title="Date", legend_xanchor="left", legend_x=0.01, paper_bgcolor="rgba(255,255,255,0)", plot_bgcolor="rgba(255,255,255,0)", margin_l=50, margin_r=50, margin_t=50, margin_b=50)
+    layout_options = (xaxis_title="Date", yaxis_rangemode="tozero", legend_xanchor="left", legend_x=0.01, paper_bgcolor="rgba(255,255,255,0)", plot_bgcolor="rgba(255,255,255,0)", margin_l=50, margin_r=50, margin_t=50, margin_b=50)
+
+    ont_pop = 14_733_119
+    people_vaccinated = total_admin .- total_complete
+    dtick = get_dtick(maximum(people_vaccinated))
 
     t1 = bar(x=date,y=total_complete,name="Fully Vaccinated")
     t2 = bar(x=date,y=total_admin.-total_complete.*2,name="Partially Vaccinated")
-    p1 = Plot([t1,t2], Layout(yaxis_title="People Vaccinated",barmode="stack";layout_options...))
+    t3 = scatter(x=date,y=people_vaccinated./ont_pop,yaxis="y2",name="",opacity=0,showlegend=false)
+    p1 = Plot([t1,t2,t3], Layout(yaxis_title="People Vaccinated",barmode="stack";layout_options...,
+        yaxis_dtick=dtick,yaxis2_dtick=dtick/ont_pop,yaxis2_rangemode="tozero",yaxis2_tickformat=",.1%",yaxis2_side="right",yaxis2_overlaying="y",yaxis2_scaleanchor="y",yaxis2_scaleratio=ont_pop,yaxis2_showgrid=false))
 
 
     t1 = bar(x=daily_date,y=daily_dose,name="Daily Doses")
@@ -100,7 +106,7 @@ function plot_all_plotly()
     positivity = max.(0,daily_positive./daily_total.*100)
 
     # plot
-    layout_options = (xaxis_range=[date[18],date[end]+Day(1)], xaxis_title="Date", legend_xanchor="left", legend_x=0.01, paper_bgcolor="rgba(255,255,255,0)", plot_bgcolor="rgba(255,255,255,0)", margin_l=50, margin_r=50, margin_t=50, margin_b=50)
+    layout_options = (xaxis_range=[date[18],date[end]+Day(1)], xaxis_title="Date", yaxis_rangemode="tozero", legend_xanchor="left", legend_x=0.01, paper_bgcolor="rgba(255,255,255,0)", plot_bgcolor="rgba(255,255,255,0)", margin_l=50, margin_r=50, margin_t=50, margin_b=50)
 
     t1 = bar(x=date,y=active,name="Active")
     t2 = bar(x=date,y=recovered,name="Recovered")
@@ -150,5 +156,24 @@ moving_average(vs,n) = [sum(@view vs[i-n+1:i])/n for i in n:length(vs)]
 
 # linear regression
 linreg(x::Matrix, y::Array) = x\y
+
+function get_dtick(ymax)
+    @assert ymax > 1 # method only works for values larger than 1
+    units = [1,2,5,10]
+    dtick = round(Int,ymax)
+    tdiff = ymax/1
+    for nticks in 5:9
+        Δ = ymax/nticks
+        pow = floor(Int, log10(Δ))
+        m = round(Int, Δ/10^pow)
+        u = units[argmin(abs.(m.-units))]
+        d = u*10^pow
+        if abs(d-Δ) < tdiff
+            tdiff = abs(d-Δ)
+            dtick = d
+        end
+    end
+    return dtick
+end
 
 end # module
