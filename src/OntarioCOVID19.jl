@@ -88,8 +88,10 @@ function plot_all_plotly()
     active = coalesce.(df.Confirmed_Positive,0)::Vector{Int}
     recovered = coalesce.(df.Resolved,0)::Vector{Int}
     deceased = coalesce.(df.Deaths,0)::Vector{Int}
-    ventilator = coalesce.(df.Number_of_patients_in_ICU_on_a_ventilator_due_to_COVID_19,0)::Vector{Int}
-    icu = coalesce.(df.Number_of_patients_in_ICU_due_to_COVID_19,0)::Vector{Int}
+    ventilator = coalesce.(df.Num_of_patients_in_ICU_on_a_ventilator_testing_positive,0)::Vector{Int} .+
+        coalesce.(df.Num_of_patients_in_ICU_on_a_ventilator_testing_negative,0)
+    icu = coalesce.(df.Number_of_patients_in_ICU_testing_positive_for_COVID_19,0)::Vector{Int} .+ 
+        coalesce.(df.Number_of_patients_in_ICU_testing_negative_for_COVID_19,0)::Vector{Int}
     hospitalized = coalesce.(df.Number_of_patients_hospitalized_with_COVID_19,0)::Vector{Int}
     tests = coalesce.(df.Total_patients_approved_for_testing_as_of_Reporting_Date,0)::Vector{Int}
     investigating = coalesce.(df.Under_Investigation,0)::Vector{Int}
