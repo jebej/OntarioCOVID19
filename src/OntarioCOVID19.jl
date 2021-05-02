@@ -35,9 +35,9 @@ function plot_vaccination_data()
     df = dropmissing(df, :total_doses_administered, disallowmissing=true)::DataFrame
 
     date = df.report_date::Vector{Date}
-    prev_day_admin = @. tryparse(Int,replace(coalesce(df.previous_day_doses_administered,"0"),","=>""))::Vector{Int}
-    total_admin = @. tryparse(Int,replace(coalesce(df.total_doses_administered,"0"),","=>""))::Vector{Int}
-    total_complete = @. tryparse(Int,replace(coalesce(df.total_individuals_fully_vaccinated,"0"),","=>""))::Vector{Int}
+    prev_day_admin = coalesce.(df.previous_day_doses_administered,0)::Vector{Int}
+    total_admin = coalesce.(df.total_doses_administered,0)::Vector{Int}
+    total_complete = coalesce.(df.total_individuals_fully_vaccinated,0)::Vector{Int}
 
     # insert a data row for 2020-12-29 by using previous_day_doses_administered
     insert!(date, 2, date[2]-Day(1))
