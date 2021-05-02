@@ -1,6 +1,0 @@
-MethodError: no method matching similar(::Int64, ::Type{Any})
-Closest candidates are:
-  similar(!Matched::Array{T,1}, ::Type) where T at array.jl:377
-  similar(!Matched::Array{T,2}, ::Type) where T at array.jl:378
-  similar(!Matched::Array, ::Type, !Matched::Tuple{Vararg{Int64,N}}) where N at array.jl:380
-  ...
