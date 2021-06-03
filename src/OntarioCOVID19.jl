@@ -35,7 +35,7 @@ function plot_vaccination_data()
     df = dropmissing(df, :total_doses_administered, disallowmissing=true)::DataFrame
 
     date = df.report_date::Vector{Date}
-    prev_day_admin = coalesce.(df.previous_day_doses_administered,0)::Vector{Int}
+    prev_day_admin = coalesce.(df.previous_day_total_doses_administered,0)::Vector{Int}
     total_admin = coalesce.(df.total_doses_administered,0)::Vector{Int}
     total_complete = coalesce.(df.total_individuals_fully_vaccinated,0)::Vector{Int}
 
@@ -54,6 +54,7 @@ function plot_vaccination_data()
     # manipulations to get daily data
     daily_dose = diff([0;total_admin])
     daily_date = date .- Day(1)
+    daily_complete = diff([0;total_complete])
 
     # plot
     layout_options = (xaxis_title="Date", yaxis_rangemode="tozero", legend_xanchor="left", legend_x=0.01, paper_bgcolor="rgba(255,255,255,0)", plot_bgcolor="rgba(255,255,255,0)", margin_l=50, margin_r=50, margin_t=50, margin_b=50)
@@ -69,9 +70,10 @@ function plot_vaccination_data()
         yaxis_dtick=dtick,yaxis2_dtick=dtick/ont_pop,yaxis2_rangemode="tozero",yaxis2_tickformat=",.1%",yaxis2_side="right",yaxis2_overlaying="y",yaxis2_scaleanchor="y",yaxis2_scaleratio=ont_pop,yaxis2_showgrid=false))
 
 
-    t1 = bar(x=daily_date,y=daily_dose,name="Daily Doses")
-    t2 = scatter(x=daily_date[7:end],y=moving_average(daily_dose,7),name="7-Day Average")
-    p2 = Plot([t1,t2], Layout(yaxis_title="Doses",barmode="stack";layout_options...))
+    t1 = bar(x=daily_date,y=daily_complete,name="Second Doses")
+    t2 = bar(x=daily_date,y=daily_dose.-daily_complete,name="First Doses")
+    t3 = scatter(x=daily_date[7:end],y=moving_average(daily_dose,7),name="7-Day Average")
+    p2 = Plot([t1,t2,t3], Layout(yaxis_title="Doses",barmode="stack";layout_options...))
 
     return p1, p2
 end
