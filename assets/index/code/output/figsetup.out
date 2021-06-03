@@ -1,0 +1,1 @@
+ArgumentError: column name :previous_day_doses_administered not found in the data frame
