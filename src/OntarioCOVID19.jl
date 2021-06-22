@@ -119,7 +119,7 @@ function plot_all_plotly()
     t2 = scatter(x=date[7:end],y=moving_average(daily_positive,7),name="7-Day Average")
     p2 = Plot([t1,t2], Layout(yaxis_title="New Cases",barmode="stack";layout_options...))
 
-    t1 = bar(x=date,y=hospitalized.-icu,name="Hospitalized, not in ICU")
+    t1 = bar(x=date,y=max.(hospitalized.-icu,0),name="Hospitalized, not in ICU")
     t2 = bar(x=date,y=icu.-ventilator,name="ICU without ventilator")
     t3 = bar(x=date,y=ventilator,name="On a ventilator")
     p3 = Plot([t1,t2,t3], Layout(yaxis_title="Hospitalized Cases",barmode="stack";layout_options...))
