@@ -15,3 +15,4 @@ PlotlyBase = "a03496cd-edff-5a9b-9e67-9cda94a718b5"
 [compat]
 Franklin = "= 0.10.3"
 PkgPage = "0.3"
+PlotlyBase = "^0.7.2"
