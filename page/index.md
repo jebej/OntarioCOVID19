@@ -72,5 +72,10 @@ plotlyplot(pv2) #hide
 
 <!-- Data Source -->
 \begin{:section, title="Data Source", name="Data"}
+```julia:updateddate
+print(now()) #hide
+```
+Last updated: \textoutput{updateddate}
+
 All data is gathered from the Ontario Data Catalogue: [https://data.ontario.ca/](https://data.ontario.ca/dataset?keywords_en=COVID-19)
 \end{:section}
