@@ -36,44 +36,52 @@ function plot_vaccination_data()
 
     date = df.report_date::Vector{Date}
     prev_day_admin = coalesce.(df.previous_day_total_doses_administered,0)::Vector{Int}
-    total_admin = coalesce.(df.total_doses_administered,0)::Vector{Int}
-    total_complete = coalesce.(df.total_individuals_fully_vaccinated,0)::Vector{Int}
+    total_individuals_1min = coalesce.(df.total_individuals_at_least_one,0)::Vector{Int}
+    total_doses_admin = coalesce.(df.total_doses_administered,0)::Vector{Int}
+    total_2doses = coalesce.(df.total_individuals_fully_vaccinated,0)::Vector{Int}
+    total_3doses = coalesce.(df.total_individuals_3doses,0)::Vector{Int}
 
     # insert a data row for 2020-12-29 by using previous_day_doses_administered
     insert!(date, 2, date[2]-Day(1))
-    insert!(total_admin, 2, total_admin[2] - prev_day_admin[2])
+    insert!(total_doses_admin, 2, total_doses_admin[2] - prev_day_admin[2])
     insert!(prev_day_admin, 2, 0)
-    insert!(total_complete, 2, 0)
+    insert!(total_individuals_1min, 2, 0)
+    insert!(total_2doses, 2, 0)
+    insert!(total_3doses, 2, 0)
 
     # insert missing rows between 24th & 29th
     splice!(date, 2:1, date[2].-Day.(4:-1:1))
-    splice!(total_admin, 2:1, fill(total_admin[1],4))
+    splice!(total_doses_admin, 2:1, fill(total_doses_admin[1],4))
     splice!(prev_day_admin, 2:1, fill(0,4))
-    splice!(total_complete, 2:1, fill(0,4))
+    splice!(total_individuals_1min, 2:1, fill(0,4))
+    splice!(total_2doses, 2:1, fill(0,4))
+    splice!(total_3doses, 2:1, fill(0,4))
 
     # manipulations to get daily data
-    daily_dose = diff([0;total_admin])
+    daily_dose = diff([0;total_doses_admin])
     daily_date = date .- Day(1)
-    daily_complete = diff([0;total_complete])
+    daily_2doses = diff([0;total_2doses])
+    daily_3doses = diff([0;total_3doses])
 
     # plot
     layout_options = (xaxis_title="Date", yaxis_rangemode="tozero", legend_xanchor="left", legend_x=0.01, paper_bgcolor="rgba(255,255,255,0)", plot_bgcolor="rgba(255,255,255,0)", margin_l=50, margin_r=50, margin_t=50, margin_b=50)
 
     ont_pop = 14_733_119
-    people_vaccinated = total_admin .- total_complete
-    dtick = get_dtick(maximum(people_vaccinated))
+    dtick = get_dtick(maximum(total_individuals_1min))
 
-    t1 = bar(x=date,y=total_complete,name="Fully Vaccinated")
-    t2 = bar(x=date,y=total_admin.-total_complete.*2,name="Partially Vaccinated")
-    t3 = scatter(x=date,y=people_vaccinated./ont_pop,yaxis="y2",name="",opacity=0,showlegend=false)
-    p1 = Plot([t1,t2,t3], Layout(yaxis_title="People Vaccinated",barmode="stack";layout_options...,
+    t1 = bar(x=date,y=total_3doses,name="Three doses")
+    t2 = bar(x=date,y=total_2doses.-total_3doses,name="Two doses")
+    t3 = bar(x=date,y=total_doses_admin.-(total_3doses.*3).-(total_2doses.-total_3doses).*2,name="One dose")
+    t4 = scatter(x=date,y=total_individuals_1min./ont_pop,yaxis="y2",name="",opacity=0,showlegend=false)
+    p1 = Plot([t1,t2,t3,t4], Layout(yaxis_title="People Vaccinated",barmode="stack";layout_options...,
         yaxis_dtick=dtick,yaxis2_dtick=dtick/ont_pop,yaxis2_rangemode="tozero",yaxis2_tickformat=",.1%",yaxis2_side="right",yaxis2_overlaying="y",yaxis2_scaleanchor="y",yaxis2_scaleratio=ont_pop,yaxis2_showgrid=false))
 
 
-    t1 = bar(x=daily_date,y=daily_complete,name="Second Doses")
-    t2 = bar(x=daily_date,y=daily_dose.-daily_complete,name="First Doses")
-    t3 = scatter(x=daily_date[7:end],y=moving_average(daily_dose,7),name="7-Day Average")
-    p2 = Plot([t1,t2,t3], Layout(yaxis_title="Doses",barmode="stack";layout_options...))
+    t1 = bar(x=daily_date,y=daily_3doses,name="Third Doses")
+    t2 = bar(x=daily_date,y=daily_2doses,name="Second Doses")
+    t3 = bar(x=daily_date,y=daily_dose.-daily_3doses.-daily_2doses,name="First Doses")
+    t4 = scatter(x=daily_date[7:end],y=moving_average(daily_dose,7),name="7-Day Average")
+    p2 = Plot([t1,t2,t3,t4], Layout(yaxis_title="Doses",barmode="stack";layout_options...))
 
     return p1, p2
 end
