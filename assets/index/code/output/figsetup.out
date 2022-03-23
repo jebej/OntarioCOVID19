@@ -1,0 +1,17 @@
+HTTP.ExceptionRequest.StatusError(502, "GET", "/dataset/752ce2b7-c15a-4965-a3dc-397bf405e7cc/resource/8a89caa9-511c-4568-af89-7f2174b4378c/download/vaccine_doses.csv", HTTP.Messages.Response:
+"""
+HTTP/1.1 502 Bad Gateway
+Server: Microsoft-Azure-Application-Gateway/v2
+Date: Wed, 23 Mar 2022 15:42:50 GMT
+Content-Type: text/html
+Content-Length: 183
+Connection: keep-alive
+
+<html>
+<head><title>502 Bad Gateway</title></head>
+<body>
+<center><h1>502 Bad Gateway</h1></center>
+<hr><center>Microsoft-Azure-Application-Gateway/v2</center>
+</body>
+</html>
+""")
