@@ -1,12 +1,12 @@
 HTTP.ExceptionRequest.StatusError(403, "GET", "/dataset/f4f86e54-872d-43f8-8a86-3892fd3cb5e6/resource/ed270bb8-340b-41f9-a7c6-e8ef587e6d11/download/covidtesting.csv", HTTP.Messages.Response:
 """
 HTTP/1.1 403 Forbidden
-Date: Thu, 02 Nov 2023 16:06:06 GMT
+Date: Fri, 03 Nov 2023 15:36:56 GMT
 Content-Type: text/html
 Content-Length: 1261
 Connection: close
 Cache-Control: no-store
-x-azure-ref: 20231102T160606Z-xteka2qhu90qp2gu5b0xm7ew1w000000012000000001s7tn
+x-azure-ref: 20231103T153656Z-y7x5pu49zt3g5cyhk47ckaxuqw00000004a0000000019zsq
 X-Cache: CONFIG_NOCACHE
 
 <!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
