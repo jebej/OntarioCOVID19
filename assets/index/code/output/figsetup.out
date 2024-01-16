@@ -1,8 +1,58 @@
 HTTP.ExceptionRequest.StatusError(403, "GET", "/dataset/f4f86e54-872d-43f8-8a86-3892fd3cb5e6/resource/ed270bb8-340b-41f9-a7c6-e8ef587e6d11/download/covidtesting.csv", HTTP.Messages.Response:
 """
 HTTP/1.1 403 Forbidden
-X-Azure-Ref: 01FClZQAAAAAjxdyolkVDQL2TCoF42bHfUEhYMzFFREdFMDExNwA1NTZmOWRhNy03NzhkLTRlMGYtYmZhMi0wZDQzNWQ5Y2UzYzc=
-Date: Mon, 15 Jan 2024 15:35:47 GMT
+Date: Tue, 16 Jan 2024 15:35:44 GMT
+Content-Type: text/html
+Content-Length: 1261
 Connection: close
+Cache-Control: no-store
+x-azure-ref: 20240116T153544Z-91m8xd9ks91zr01bpt3f2frran00000002ug00000001bcst
+X-Cache: CONFIG_NOCACHE
 
-<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'><html xmlns='http://www.w3.org/1999/xhtml'><head><meta content='text/html; charset=utf-8' http-equiv='content-type'/><style type='text/css'>body { font-family:Arial; margin-left:40px; }img  { border:0 none; }#content { margin-left: auto; margin-right: auto }#message h2 { font-size: 20px; font-weight: normal; color: #000000; margin: 34px 0px 0px 0px }#message p  { font-size: 13px; color: #000000; margin: 7px 0px 0px 0px }#errorref { font-size: 11px; color: #737373; margin-top: 41px }</style><title>Microsoft</title></head><body><div id='content'><div id='message'><h2>The request is blocked.</h2></div><div id='errorref'><span>01FClZQAAAAAjxdyolkVDQL2TCoF42bHfUEhYMzFFREdFMDExNwA1NTZmOWRhNy03NzhkLTRlMGYtYmZhMi0wZDQzNWQ5Y2UzYzc=</span></div></div></body></html>""")
+<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Transitional//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd'>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+
+<head>
+    <meta content='text/html; charset=utf-8' http-equiv='content-type' />
+    <style type='text/css'>
+        body {
+            font-family: Arial;
+            margin-left: 40px;
+        }
+
+        img {
+            border: 0 none;
+        }
+
+        #content {
+            margin-left: auto;
+            margin-right: auto
+        }
+
+        #message h2 {
+            font-size: 20px;
+            font-weight: normal;
+            color: #000000;
+            margin: 34px 0px 0px 0px
+        }
+
+        #message p {
+            font-size: 13px;
+            color: #000000;
+            margin: 7px 0px 0px0px
+        }
+
+        #errorref {
+            font-size: 11px;
+            color: #737373;
+            margin-top: 41px
+        }
+    </style>
+    <title>Service unavailable</title>
+</head>
+
+<body>
+    <div id='content'>
+⋮
+1261-byte body
+""")
